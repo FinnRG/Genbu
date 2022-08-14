@@ -1,8 +1,8 @@
 import { SupabaseRealtimePayload } from '@supabase/supabase-js'
 import { KonvaEventObject } from 'konva/lib/Node'
-import { useRef, useState, FC, useEffect } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { Layer, Line, Stage, Text } from 'react-konva'
-import supabase from '../clients/supabase'
+import supabase from '../../clients/supabase'
 
 type DrawTool = 'eraser' | 'pen'
 
@@ -11,7 +11,7 @@ interface LineData {
   points: number[]
 }
 
-const WhiteBoard: FC = () => {
+const WhiteBoard: React.FC = () => {
   const isDrawing = useRef(false)
   const [tool, setTool] = useState<DrawTool>('pen')
   const [lines, setLines] = useState<LineData[]>([])
@@ -69,19 +69,9 @@ const WhiteBoard: FC = () => {
 
   return (
     <div>
-      <select
-        value={tool}
-        onChange={(e) => {
-          setTool(e.target.value as DrawTool)
-        }}
-      >
-        <option value='pen'>Pen</option>
-        <option value='eraser'>Eraser</option>
-      </select>
-      <button onClick={() => setLines([])}>Clear!</button>
       <Stage
         width={window.innerWidth}
-        height={window.innerHeight}
+        height={window.innerHeight - 55}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -114,7 +104,7 @@ interface DrawLineProps {
   tool: DrawTool
 }
 
-const DrawLine: FC<DrawLineProps> = (props) => {
+const DrawLine: React.FC<DrawLineProps> = (props) => {
   return (
     <Line
       points={props.points}
