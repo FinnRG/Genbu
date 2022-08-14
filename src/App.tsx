@@ -1,26 +1,15 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
 
-function App() {
+import React from 'react'
+import WhiteBoard from './components/Whiteboard'
+
+const App: React.FC = () => {
+  // Stage is a div container
+  // Layer is actual canvas element (so you may have several canvases in the stage)
+  // And then we have canvas shapes inside the Layer
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <WhiteBoard />
+  )
 }
 
-export default App;
+export default App
