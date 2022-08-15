@@ -2,6 +2,7 @@ import { SupabaseRealtimePayload } from '@supabase/supabase-js'
 import { KonvaEventObject } from 'konva/lib/Node'
 import React, { useRef, useState, useEffect } from 'react'
 import { Layer, Line, Stage, Text } from 'react-konva'
+import * as Y from 'yjs'
 import supabase from '../../clients/supabase'
 
 type DrawTool = 'eraser' | 'pen'
@@ -52,19 +53,12 @@ const WhiteBoard: React.FC = () => {
       .then(() => {})
   }
 
-  const handleUpdates = (payload: SupabaseRealtimePayload<{data: LineData[]}>): void => {
-    setLines(payload.new.data)
-  }
-
   useEffect(() => {
     supabase.from('whiteboards')
       .select('data')
       .match({ id: '924e29b2-68fb-4b09-a31b-c48ad1de8ef2' })
       .then((e) => setLines(e.data === null ? [] : e.data[0].data))
 
-    supabase.from('whiteboards')
-      .on('UPDATE', handleUpdates)
-      .subscribe()
   }, [])
 
   return (
