@@ -2,7 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@^1.33.2'
 
 export const supabaseClient = createClient(
   // Supabase API URL - env var exported by default when deployed.
-  Deno.env.get('REACT_APP_SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_URL') ?? '',
   // Supabase API ANON KEY - env var exported by default when deployed.
-  Deno.env.get('REACT_APP_SUPABASE_ANON_KEY') ?? ''
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 )
