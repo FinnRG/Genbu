@@ -1,4 +1,3 @@
-import { SupabaseRealtimePayload } from '@supabase/supabase-js'
 import { KonvaEventObject } from 'konva/lib/Node'
 import React, { useRef, useState, useEffect } from 'react'
 import { Layer, Line, Stage, Text } from 'react-konva'
@@ -58,7 +57,6 @@ const WhiteBoard: React.FC = () => {
       .select('data')
       .match({ id: '924e29b2-68fb-4b09-a31b-c48ad1de8ef2' })
       .then((e) => setLines(e.data === null ? [] : e.data[0].data))
-
   }, [])
 
   return (
