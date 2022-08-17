@@ -4,7 +4,9 @@
   "private": true,
   "dependencies": {
     "@mantine/core": "^5.1.6",
+    "@mantine/form": "^5.1.6",
     "@mantine/hooks": "^5.1.6",
+    "@mantine/notifications": "^5.1.6",
     "@supabase/supabase-js": "^1.35.6",
     "@tabler/icons": "^1.82.0",
     "konva": "^8.3.11",
