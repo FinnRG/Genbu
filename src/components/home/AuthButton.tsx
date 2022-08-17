@@ -18,7 +18,7 @@ const AuthButton: React.FC<AuthButtonProps> = (props) => {
       <Modal
         opened={opened}
         onClose={() => setOpened(false)}
-        title={`Welcome to Mantine, ${title} with`}
+        title={`Welcome to Genbu, ${title} with`}
         overlayColor={theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2]}
         overlayOpacity={0.55}
         overlayBlur={3}

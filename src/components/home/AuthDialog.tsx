@@ -109,7 +109,7 @@ const AuthDialog: React.FC<AuthDialogProps> = (props) => {
           <TextInput
             required
             label='Email'
-            placeholder='hello@mantine.dev'
+            placeholder='genbu@example.com'
             value={form.values.email}
             onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
             error={form.errors.email && 'Invalid email'}
