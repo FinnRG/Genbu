@@ -17,7 +17,7 @@ serve(async (req) => {
     //@ts-ignore: Types for cryptoRandomString seem broken
     const room_key = cryptoRandomString({ length: 10 }) 
 
-    const { data, error } = await supabaseClient.from('whiteboards')
+    const { data, error } = await supabaseClient.from('whiteboard')
       .insert([{ data: new Y.Doc(), room_key }])
     console.log({ data, error })
 

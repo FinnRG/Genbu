@@ -22,22 +22,21 @@ interface AuthDialogProps {
 }
 
 interface FormValues {
-    name: string,
-    email: string,
-    password: string,
+  name: string
+  email: string
+  password: string
 }
 
 const AuthDialog: React.FC<AuthDialogProps> = (props) => {
-  
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<boolean>(false);
-    const [success, setSuccess] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<boolean>(false)
+  const [success, setSuccess] = useState<boolean>(false)
 
   const form = useForm<FormValues>({
     initialValues: {
       email: '',
       name: '',
-      password: '',
+      password: ''
     },
 
     validate: {
@@ -46,39 +45,39 @@ const AuthDialog: React.FC<AuthDialogProps> = (props) => {
     }
   })
 
-  const validateAuthSuccess = ({ user, error }: { user: User | null, error: ApiError | null}) => {
+  const validateAuthSuccess = ({ user, error }: { user: User | null, error: ApiError | null}): void => {
     if (user === null || error !== null) {
-        setError(true);
+      setError(true)
     }
-    setSuccess(true);
+    setSuccess(true)
   }
 
-  const onSubmit = ({ email, name, password}: FormValues) => {
-    setLoading(true);
-    setError(false);
-    let promise;
+  const onSubmit = ({ email, name, password }: FormValues): void => {
+    setLoading(true)
+    setError(false)
+    let promise
     if (props.title === 'register') {
-        promise = supabase.auth.signUp({
-            email,
-            password,
-        }, {
-            data: {
-                first_name: name
-            }
-        })
+      promise = supabase.auth.signUp({
+        email,
+        password
+      }, {
+        data: {
+          user_name: name
+        }
+      })
     } else {
-        promise = supabase.auth.signIn({
-            email,
-            password,
-        })
+      promise = supabase.auth.signIn({
+        email,
+        password
+      })
     }
     promise
-        .then((res) => validateAuthSuccess(res))
-        .catch(() => setError(true))
+      .then((res) => validateAuthSuccess(res))
+      .catch(() => setError(true))
   }
 
   if (success) {
-    return <Navigate to='/app/overview' />
+    return <Navigate to='/app/dashboard' />
   }
 
   return (
@@ -92,11 +91,11 @@ const AuthDialog: React.FC<AuthDialogProps> = (props) => {
 
       <form onSubmit={form.onSubmit(onSubmit)}>
         <Stack>
-        {error && (
-            <Alert icon={<IconAlertCircle size={16} />} title="Error"  color="red">
-                An error occured. Please check if you have an active internet connection and try again in a few minutes.
+          {error && (
+            <Alert icon={<IconAlertCircle size={16} />} title='Error' color='red'>
+              An error occured. Please check if you have an active internet connection and try again in a few minutes.
             </Alert>
-        )}
+          )}
           {props.title === 'register' && (
             <TextInput
               label='Name'

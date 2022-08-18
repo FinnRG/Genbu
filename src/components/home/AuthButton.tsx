@@ -1,4 +1,4 @@
-import { Button, Modal, PasswordInput, Stack, TextInput, useMantineTheme } from '@mantine/core'
+import { Button, Modal, useMantineTheme } from '@mantine/core'
 import { useToggle } from '@mantine/hooks'
 import { useState } from 'react'
 import AuthDialog from './AuthDialog'

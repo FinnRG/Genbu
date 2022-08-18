@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@^1.33.2'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@^1.35.6'
 
 export const supabaseClient = createClient(
   // Supabase API URL - env var exported by default when deployed.
