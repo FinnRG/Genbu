@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS public.user_team
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT user_team_user_id_fkey FOREIGN KEY (user_id)
-        REFERENCES auth.users (id) MATCH SIMPLE
+        REFERENCES public.user (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )

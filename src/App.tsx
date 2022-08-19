@@ -7,7 +7,7 @@ import HomeView from './components/home/HomeView'
 import Dashboard from './components/dashboard/Dashboard'
 
 const RequireAuth: React.FC = () => {
-  if (supabase.auth.user() === null) {
+  if (supabase.auth.getUser() === null) {
     return <Navigate to='/' replace />
   }
 

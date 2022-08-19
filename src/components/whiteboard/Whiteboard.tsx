@@ -47,6 +47,7 @@ const WhiteBoard: React.FC = () => {
     setCurrentLine(null)
 
     supabase.from('whiteboard')
+      // @ts-expect-error: Json
       .update({ data: [...lines, currentLine] })
       .match({ id: '924e29b2-68fb-4b09-a31b-c48ad1de8ef2' })
       .then(() => {}, (err) => {
@@ -57,8 +58,8 @@ const WhiteBoard: React.FC = () => {
   useEffect(() => {
     supabase.from('whiteboard')
       .select('data')
-      .match({ id: '924e29b2-68fb-4b09-a31b-c48ad1de8ef2' })
-      .then((e) => setLines(e.data === null ? [] : e.data[0].data), (err) => console.log(err))
+      .match({ id: '924e29b2-68fb-4b09-a31b-c48ad1de8ef2' }) // @ts-expect-error: Json
+      .then((e) => setLines(e.data === null ? [] : e.data[0]?.data as LineData[]), (err) => console.log(err))
   }, [])
 
   return (

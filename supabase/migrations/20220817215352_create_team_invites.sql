@@ -10,11 +10,11 @@ CREATE TABLE IF NOT EXISTS public.team_invite
     created_at timestamp with time zone DEFAULT now(),
     CONSTRAINT team_invite_pkey PRIMARY KEY (inviter_id, invitee_id),
     CONSTRAINT team_invite_invitee_id_fkey FOREIGN KEY (invitee_id)
-        REFERENCES auth.users (id) MATCH SIMPLE
+        REFERENCES public.user (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT team_invite_inviter_id_fkey FOREIGN KEY (inviter_id)
-        REFERENCES auth.users (id) MATCH SIMPLE
+        REFERENCES public.user (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )

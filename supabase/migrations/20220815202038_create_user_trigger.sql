@@ -8,7 +8,11 @@ CREATE TABLE IF NOT EXISTS public."user"
     id uuid NOT NULL,
     email text COLLATE pg_catalog."default" NOT NULL,
     name text COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT user_pkey PRIMARY KEY (id)
+    CONSTRAINT user_pkey PRIMARY KEY (id),
+    CONSTRAINT user_id_fkey FOREIGN KEY (id)
+        REFERENCES auth.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
 )
 
 TABLESPACE pg_default;

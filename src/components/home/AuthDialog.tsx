@@ -13,7 +13,7 @@ import {
 import React, { useState } from 'react'
 import supabase from '../../clients/supabase'
 import { IconAlertCircle } from '@tabler/icons'
-import { ApiError, User } from '@supabase/supabase-js'
+import { User } from '@supabase/supabase-js'
 import { Navigate } from 'react-router-dom'
 
 interface AuthDialogProps {
@@ -45,8 +45,8 @@ const AuthDialog: React.FC<AuthDialogProps> = (props) => {
     }
   })
 
-  const validateAuthSuccess = ({ user, error }: { user: User | null, error: ApiError | null}): void => {
-    if (user === null || error !== null) {
+  const validateAuthSuccess = (user: User | null): void => {
+    if (user === null) {
       setError(true)
     }
     setSuccess(true)
@@ -59,20 +59,21 @@ const AuthDialog: React.FC<AuthDialogProps> = (props) => {
     if (props.title === 'register') {
       promise = supabase.auth.signUp({
         email,
-        password
-      }, {
-        data: {
-          user_name: name
+        password,
+        options: {
+          data: {
+            user_name: name
+          }
         }
       })
     } else {
-      promise = supabase.auth.signIn({
+      promise = supabase.auth.signInWithPassword({
         email,
         password
       })
     }
     promise
-      .then((res) => validateAuthSuccess(res))
+      .then((res) => validateAuthSuccess(res.data.user))
       .catch(() => setError(true))
   }
 
