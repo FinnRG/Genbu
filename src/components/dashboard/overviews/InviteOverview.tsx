@@ -50,6 +50,7 @@ const InviteOverview: React.FC = () => {
       })
     }
     fetchInvites()
+    // TODO: Better updating
     supabase.channel('public:team_invite')
       .on(
         'postgres_changes',

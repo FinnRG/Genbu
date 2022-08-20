@@ -10,6 +10,11 @@ interface Team {
   color: string
 }
 
+type TeamIDArray = Array<Team & { id: string }>
+interface TeamTableProps {
+  teams: TeamIDArray
+}
+
 const getIconColor = (hexString: string): string => {
   const [red, green, blue] = hexString.substring(1).split(/(..)/g)
     .filter(s => s)
@@ -21,35 +26,7 @@ const getIconColor = (hexString: string): string => {
   return '#FFFFFF'
 }
 
-const TeamTable: React.FC = () => {
-  const [teams, setTeams] = useState<Array<Team & { id: string }>>([])
-
-  useEffect(() => {
-    const getTeams = async (): Promise<void> => {
-      const { data: { user } } = await supabase.auth.getUser()
-      supabase.from('user_team')
-        .select(`
-          team_id,
-          team (
-            name,
-            color
-          )
-        `)
-        .eq('user_id', user?.id ?? '')
-        .then(({ data }) => {
-          setTeams(data?.map((team) => {
-            return {
-              id: team.team_id,
-              name: (team.team as Team).name,
-              color: (team.team as Team).color
-            }
-          }) ?? [])
-        })
-    }
-
-    getTeams()
-  }, [])
-
+const TeamTable: React.FC<TeamTableProps> = ({ teams }) => {
   return (
     <SimpleGrid
       cols={4}
@@ -80,7 +57,11 @@ interface CreateTeamFormValues {
   users: string[]
 }
 
-const CreateTeamButton: React.FC = () => {
+interface CreateTeamButtonProps {
+  fetchTeams: () => void
+}
+
+const CreateTeamButton: React.FC<CreateTeamButtonProps> = ({ fetchTeams }) => {
   const [opened, setOpened] = useState(false)
   const form = useForm<CreateTeamFormValues>({
     initialValues: {
@@ -101,6 +82,7 @@ const CreateTeamButton: React.FC = () => {
       .then(() => {
         setOpened(false)
         form.reset()
+        fetchTeams()
       })
   }
 
@@ -159,10 +141,38 @@ const CreateTeamButton: React.FC = () => {
 }
 
 const TeamOverview: React.FC = () => {
+  const [teams, setTeams] = useState<TeamIDArray>([])
+
+  const fetchTeams = async (): Promise<void> => {
+    const { data: { user } } = await supabase.auth.getUser()
+    supabase.from('user_team')
+      .select(`
+        team_id,
+        team (
+          name,
+          color
+        )
+      `)
+      .eq('user_id', user?.id ?? '')
+      .then(({ data }) => {
+        setTeams(data?.map((team) => {
+          return {
+            id: team.team_id,
+            name: (team.team as Team).name,
+            color: (team.team as Team).color
+          }
+        }) ?? [])
+      })
+  }
+
+  useEffect(() => {
+    fetchTeams()
+  }, [])
+
   return (
     <>
-      <CreateTeamButton />
-      <TeamTable />
+      <CreateTeamButton fetchTeams={fetchTeams} />
+      <TeamTable teams={teams} />
     </>
   )
 }
