@@ -57,8 +57,13 @@ serve(async (req) => {
       })
   });
 
+  // Add team creator to newly created team
   await supabaseClient.from('user_team')
     .insert({ user_id: inviter_id, team_id: teamData.id });
+
+  // Create root folder
+  await supabaseClient.from('folder')
+    .insert({ created_by: inviter_id, team_id: teamData.id, name: 'root' });
 
   (await Promise.all(res_users));
 

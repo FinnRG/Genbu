@@ -9,6 +9,32 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      folder: {
+        Row: {
+          team_id: string | null;
+          created_at: string;
+          created_by: string;
+          parent_id: string | null;
+          name: string;
+          id: string;
+        };
+        Insert: {
+          team_id?: string | null;
+          created_at?: string;
+          created_by: string;
+          parent_id?: string | null;
+          name: string;
+          id?: string;
+        };
+        Update: {
+          team_id?: string | null;
+          created_at?: string;
+          created_by?: string;
+          parent_id?: string | null;
+          name?: string;
+          id?: string;
+        };
+      };
       team: {
         Row: {
           name: string;
@@ -52,18 +78,24 @@ export interface Database {
           room_key: string;
           id: string;
           created_at: string;
+          folder_id: string;
+          name: string;
         };
         Insert: {
           data: Json;
           room_key: string;
           id?: string;
           created_at?: string;
+          folder_id: string;
+          name: string;
         };
         Update: {
           data?: Json;
           room_key?: string;
           id?: string;
           created_at?: string;
+          folder_id?: string;
+          name?: string;
         };
       };
       user_team: {
