@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Navbar, Tooltip, UnstyledButton, createStyles, Stack } from '@mantine/core'
+import React, { useEffect, useState } from 'react'
+import { Navbar, Tooltip, UnstyledButton, createStyles, Stack, Indicator } from '@mantine/core'
 import {
   TablerIcon,
   IconLogout,
@@ -77,18 +77,50 @@ interface DashboardNavbarProps {
 
 const DashboardNavbar: React.FC<DashboardNavbarProps> = ({ setContent }) => {
   const [active, setActive] = useState(0)
+  const [inviteCount, setInviteCount] = useState(0)
   const navigate = useNavigate()
 
+  useEffect(() => {
+    const fetchInvites = async (): Promise<void> => {
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (user === null) {
+        return
+      }
+
+      const { count } = await supabase.from('team_invite')
+        .select('invitee_id', { count: 'exact' })
+        .eq('invitee_id', user.id)
+      setInviteCount(count ?? 0)
+    }
+
+    supabase.channel('public:team_invite')
+      .on(
+        'postgres_changes', { event: '*', schema: 'public', table: 'team_invite' },
+        () => {
+          fetchInvites()
+        })
+      .subscribe()
+
+    fetchInvites()
+  }, [])
+
   const links = mockdata.map((link, index) => (
-    <NavbarLink
-      {...link}
+    <Indicator
+      disabled={link.label !== 'Invites' || inviteCount === 0}
+      label={inviteCount}
+      size={16}
       key={link.label}
-      active={index === active}
-      onClick={() => {
-        setActive(index)
-        setContent(mockdata[index].component)
-      }}
-    />
+    >
+      <NavbarLink
+        {...link}
+        active={index === active}
+        onClick={() => {
+          setActive(index)
+          setContent(mockdata[index].component)
+        }}
+      />
+    </Indicator>
   ))
 
   const handleLogOut = (): void => {

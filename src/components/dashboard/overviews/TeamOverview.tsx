@@ -25,23 +25,29 @@ const TeamTable: React.FC = () => {
   const [teams, setTeams] = useState<Array<Team & { id: string }>>([])
 
   useEffect(() => {
-    supabase.from('user_team')
-      .select(`
-        team_id,
-        team (
-          name,
-          color
-        )
-      `)
-      .then(({ data }) => {
-        setTeams(data?.map((team) => {
-          return {
-            id: team.team_id,
-            name: (team.team as Team).name,
-            color: (team.team as Team).color
-          }
-        }) ?? [])
-      })
+    const getTeams = async (): Promise<void> => {
+      const { data: { user } } = await supabase.auth.getUser()
+      supabase.from('user_team')
+        .select(`
+          team_id,
+          team (
+            name,
+            color
+          )
+        `)
+        .eq('user_id', user?.id ?? '')
+        .then(({ data }) => {
+          setTeams(data?.map((team) => {
+            return {
+              id: team.team_id,
+              name: (team.team as Team).name,
+              color: (team.team as Team).color
+            }
+          }) ?? [])
+        })
+    }
+
+    getTeams()
   }, [])
 
   return (
@@ -92,7 +98,10 @@ const CreateTeamButton: React.FC = () => {
     supabase.functions.invoke('create_team', {
       body: JSON.stringify({ title, users, color })
     })
-      .then(() => setOpened(false))
+      .then(() => {
+        setOpened(false)
+        form.reset()
+      })
   }
 
   const randomColor = (): string => `#${Math.floor(Math.random() * 16777215).toString(16)}`
@@ -121,6 +130,7 @@ const CreateTeamButton: React.FC = () => {
               data={[]}
               label='Team members'
               placeholder='Enter the e-mail addresses of the users here '
+              dropdownComponent='div'
               getCreateLabel={(query) => `+ Add ${query}`}
               onCreate={(query) => {
                 form.setFieldValue('users', [...form.values.users, query])
