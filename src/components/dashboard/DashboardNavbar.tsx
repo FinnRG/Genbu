@@ -3,15 +3,12 @@ import { Navbar, Tooltip, UnstyledButton, createStyles, Stack, Indicator } from 
 import {
   TablerIcon,
   IconLogout,
-  IconSwitchHorizontal,
-  IconNotebook,
   IconUsers,
   IconMail
 } from '@tabler/icons'
 import TeamOverview from './overviews/TeamOverview'
 import supabase from '../../clients/supabase'
 import { useNavigate } from 'react-router-dom'
-import NotebookOverview from './overviews/NotebookOverview'
 import InviteOverview from './overviews/InviteOverview'
 
 const useStyles = createStyles((theme) => ({
@@ -56,7 +53,6 @@ const NavbarLink: React.FC<NavbarLinkProps> = ({ icon: Icon, label, active, onCl
 }
 
 const mockdata = [
-  { icon: IconNotebook, label: 'Notebooks', component: <NotebookOverview /> },
   { icon: IconUsers, label: 'Teams', component: <TeamOverview /> },
   { icon: IconMail, label: 'Invites', component: <InviteOverview /> }
 ]
@@ -139,7 +135,6 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({ setContent }) => {
         </Navbar.Section>
         <Navbar.Section>
           <Stack justify='center' spacing={0}>
-            <NavbarLink icon={IconSwitchHorizontal} label='Change account' />
             <NavbarLink onClick={handleLogOut} icon={IconLogout} label='Logout' />
           </Stack>
         </Navbar.Section>

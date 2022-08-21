@@ -82,14 +82,6 @@ const AuthDialog: React.FC<AuthDialogProps> = (props) => {
   }
 
   return (
-    <>
-      <Group grow mb='md' mt='md'>
-        {/* <GoogleButton radius="xl">Google</GoogleButton> */}
-        {/* <TwitterButton radius="xl">Twitter</TwitterButton> */}
-      </Group>
-
-      <Divider label='Or continue with email' labelPosition='center' my='lg' />
-
       <form onSubmit={form.onSubmit(onSubmit)}>
         <Stack>
           {error && (
@@ -141,7 +133,6 @@ const AuthDialog: React.FC<AuthDialogProps> = (props) => {
           <Button type='submit' loading={loading}>{upperFirst(props.title)}</Button>
         </Group>
       </form>
-    </>
   )
 }
 

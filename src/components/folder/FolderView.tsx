@@ -17,7 +17,7 @@ const FolderView: React.FC = () => {
     <>
       <Drawer
         opened={opened}
-        onClose={() => {setOpened(false)}}
+        onClose={() => { setOpened(false) }}
         withCloseButton={false}
         closeOnClickOutside={whiteboard !== null}
         closeOnEscape={whiteboard !== null}

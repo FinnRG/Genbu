@@ -28,7 +28,7 @@ const WhiteBoard: React.FC<WhiteboardProps> = (props) => {
   const control = props.control
 
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>): void => {
-    isDrawing.current = true
+    isDrawing.current = control.tool === 'pen' || control.tool === 'eraser'
     const pos = e.target.getStage()?.getRelativePointerPosition()
     const x = pos?.x === undefined ? 0 : pos?.x
     const y = pos?.y === undefined ? 0 : pos?.y

@@ -1,6 +1,6 @@
-import { Card, SimpleGrid, Text, ThemeIcon, Stack, Button, Modal, TextInput, MultiSelect, ColorInput, ActionIcon } from '@mantine/core'
+import { Card, SimpleGrid, Text, ThemeIcon, Stack, Button, Modal, TextInput, MultiSelect, ColorInput, ActionIcon, Alert } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { IconRefresh, IconUsers } from '@tabler/icons'
+import { IconAlertCircle, IconRefresh, IconUsers } from '@tabler/icons'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import supabase from '../../../clients/supabase'
@@ -53,6 +53,14 @@ interface CreateTeamButtonProps {
 
 const CreateTeamButton: React.FC<CreateTeamButtonProps> = ({ fetchTeams }) => {
   const [opened, setOpened] = useState(false)
+  const [confirmed, setConfirmed] = useState(false)
+
+  useEffect(() => {
+    supabase.auth.getUser().then((user) => {
+      setConfirmed(user.data.user?.confirmed_at !== undefined)
+    })
+  }, [])
+
   const form = useForm<CreateTeamFormValues>({
     initialValues: {
       title: '',
@@ -86,43 +94,48 @@ const CreateTeamButton: React.FC<CreateTeamButtonProps> = ({ fetchTeams }) => {
         onClose={() => setOpened(false)}
         title='Create a new Team'
       >
-        <form onSubmit={form.onSubmit(({ title, users }) => onSubmit(title, users))}>
-          <Stack>
+        {!confirmed && (
+          <Alert icon={<IconAlertCircle size={16} />} color='red'>Please activate your account via the email sent to you before proceeding.</Alert>
+        )}
+        {confirmed && (
+          <form onSubmit={form.onSubmit(({ title, users }) => onSubmit(title, users))}>
+            <Stack>
 
-            <TextInput
-              required
-              label='Title'
-              placeholder='Team name'
-              {...form.getInputProps('title')}
-            />
-            <MultiSelect
-              required
-              creatable
-              searchable
-              data={[]}
-              label='Team members'
-              placeholder='Enter the e-mail addresses of the users here '
-              dropdownComponent='div'
-              getCreateLabel={(query) => `+ Add ${query}`}
-              onCreate={(query) => {
-                form.setFieldValue('users', [...form.values.users, query])
-                return { value: query, label: query }
-              }}
-              error={form.errors.users}
-            />
-            <ColorInput
-              label='Team color'
-              value={color}
-              onChange={setColor}
-              rightSection={
-                <ActionIcon onClick={() => setColor(randomColor())}>
-                  <IconRefresh size={16} />
-                </ActionIcon>
+              <TextInput
+                required
+                label='Title'
+                placeholder='Team name'
+                {...form.getInputProps('title')}
+              />
+              <MultiSelect
+                required
+                creatable
+                searchable
+                data={[]}
+                label='Team members'
+                placeholder='Enter the e-mail addresses of the users here '
+                dropdownComponent='div'
+                getCreateLabel={(query) => `+ Add ${query}`}
+                onCreate={(query) => {
+                  form.setFieldValue('users', [...form.values.users, query])
+                  return { value: query, label: query }
+                }}
+                error={form.errors.users}
+              />
+              <ColorInput
+                label='Team color'
+                value={color}
+                onChange={setColor}
+                rightSection={
+                  <ActionIcon onClick={() => setColor(randomColor())}>
+                    <IconRefresh size={16} />
+                  </ActionIcon>
         }
-            />
-            <Button type='submit' mt='md'>Submit</Button>
-          </Stack>
-        </form>
+              />
+              <Button type='submit' mt='md'>Submit</Button>
+            </Stack>
+          </form>
+        )}
       </Modal>
 
       <Button onClick={() => setOpened(true)}>Create new Team</Button>
