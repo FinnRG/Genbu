@@ -85,6 +85,7 @@ const FolderList: React.FC<FolderListProps> = ({ team, whiteboard, setWhiteboard
         .then(({ data }) => {
           // TODO: This should be a proper error
           const folderId = data?.id ?? ''
+          setWhiteboard(folderId)
           return folderId
         })
     }
