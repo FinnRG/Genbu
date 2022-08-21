@@ -72,7 +72,7 @@ interface PartialWhiteboard {
   }
 }
 
-const FolderList: React.FC<FolderListProps> = ({ team, whiteboard, setWhiteboard, setDrawerOpened }) => {
+const FolderList: React.FC<FolderListProps> = ({ team, setWhiteboard, setDrawerOpened }) => {
   const [modalOpened, setModalOpened] = useState(false)
   const [rootFolder, setRootFolder] = useState<string | null>(null)
   const [whiteboards, whiteboardsHandler] = useListState<PartialWhiteboard>([])

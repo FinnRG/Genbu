@@ -17,10 +17,10 @@ const FolderView: React.FC = () => {
     <>
       <Drawer
         opened={opened}
-        onClose={() => {}}
+        onClose={() => {setOpened(false)}}
         withCloseButton={false}
-        closeOnClickOutside={false}
-        closeOnEscape={false}
+        closeOnClickOutside={whiteboard !== null}
+        closeOnEscape={whiteboard !== null}
         overlayOpacity={0}
       >
         <FolderList team={teamId} whiteboard={whiteboard} setWhiteboard={setWhiteboard} setDrawerOpened={setOpened} />
