@@ -1,18 +1,28 @@
 import './App.css'
 
-import React from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import WhiteBoardView from './components/whiteboard/WhiteboardView'
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import supabase from './clients/supabase'
+import HomeView from './components/home/HomeView'
+import Dashboard from './components/dashboard/Dashboard'
+import FolderView from './components/folder/FolderView'
+
+const RequireAuth: React.FC = () => {
+  if (supabase.auth.getUser() === null) {
+    return <Navigate to='/' replace />
+  }
+
+  return <Outlet />
+}
 
 const App: React.FC = () => {
-  // Stage is a div container
-  // Layer is actual canvas element (so you may have several canvases in the stage)
-  // And then we have canvas shapes inside the Layer
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' />
-        <Route path='/whiteboard' element={<WhiteBoardView />} />
+        <Route path='/' element={<HomeView />} />
+        <Route path='/app/' element={<RequireAuth />}>
+          <Route path='dashboard' element={<Dashboard />} />
+          <Route path='team/:teamId' element={<FolderView />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   )
