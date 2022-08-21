@@ -3,7 +3,7 @@ import React, { useRef, useState, useEffect } from 'react'
 import { Layer, Line, Stage } from 'react-konva'
 import * as Y from 'yjs'
 import supabase from '../../clients/supabase'
-import { useYdoc } from './useYDoc'
+import { useYjs } from './useYJS'
 
 type DrawTool = 'eraser' | 'pen'
 
@@ -19,8 +19,10 @@ interface WhiteboardProps {
 const WhiteBoard: React.FC<WhiteboardProps> = (props) => {
   const isDrawing = useRef(false)
   const [tool, setTool] = useState<DrawTool>('pen')
-  const { ydoc: canvasData } = useYdoc(props.id)
-  const lines = canvasData.getArray<LineData>('lines')
+  const { ydoc: canvasData } = useYjs({
+    roomName: props.id
+  })
+  const lines = canvasData?.getArray<LineData>('lines')
   const [currentLine, setCurrentLine] = useState<LineData|null>(null)
 
   useEffect(() => {
@@ -35,7 +37,7 @@ const WhiteBoard: React.FC<WhiteboardProps> = (props) => {
       }
 
       const arr = (data.data as Record<string, any>).data as Uint8Array
-      Y.applyUpdate(canvasData, arr)
+      Y.applyUpdate(canvasData!, arr)
     }
 
     fetchWhiteboard()
@@ -63,7 +65,7 @@ const WhiteBoard: React.FC<WhiteboardProps> = (props) => {
   }
 
   const handleMouseUp = (e: KonvaEventObject<MouseEvent>): void => {
-    if (currentLine === null) {
+    if (currentLine === null || lines === undefined) {
       return
     }
     isDrawing.current = false
@@ -82,7 +84,7 @@ const WhiteBoard: React.FC<WhiteboardProps> = (props) => {
       >
 
         <Layer>
-          {lines.map((line, i) => (
+          {lines?.map((line, i) => (
             <DrawLine
               key={i}
               points={line.points}
