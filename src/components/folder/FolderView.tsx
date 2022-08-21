@@ -1,6 +1,7 @@
 import { Drawer } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import WhiteboardView from '../whiteboard/WhiteboardView'
 import FolderList from './FolderList'
 
 const FolderView: React.FC = () => {
@@ -22,8 +23,11 @@ const FolderView: React.FC = () => {
         closeOnEscape={false}
         overlayOpacity={0}
       >
-        <FolderList team={teamId} whiteboard={whiteboard} setWhiteboard={setWhiteboard} />
+        <FolderList team={teamId} whiteboard={whiteboard} setWhiteboard={setWhiteboard} setDrawerOpened={setOpened} />
       </Drawer>
+      {whiteboard !== null && (
+        <WhiteboardView id={whiteboard} />
+      )}
     </>
   )
 }

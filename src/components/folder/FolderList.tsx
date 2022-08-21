@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Modal, Stack, TextInput } from '@mantine/core'
+import { ActionIcon, Button, Center, Modal, Paper, Stack, TextInput, Text, ButtonProps } from '@mantine/core'
 import { IconPlus } from '@tabler/icons'
 import React, { useEffect, useState } from 'react'
 import supabase from '../../clients/supabase'
@@ -31,9 +31,9 @@ const CreateWhiteboardModal: React.FC<CreateWhiteboardModalProps> = (props) => {
         name
       })
     }).then((resp) => {
-        props.setModalOpened(false)
-        const { data, error } = resp.data
-        props.whiteboardsHandler.append({ id: data.id, name: data.name, folder: { id: props.rootFolder!, name} })
+      props.setModalOpened(false)
+      const { data, error } = resp.data
+      props.whiteboardsHandler.append({ id: data.id, name: data.name, folder: { id: props.rootFolder!, name } })
     })
   }
 
@@ -60,6 +60,7 @@ interface FolderListProps {
   team: string | null
   whiteboard: string | null
   setWhiteboard: React.Dispatch<React.SetStateAction<string | null>>
+  setDrawerOpened: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 interface PartialWhiteboard {
@@ -71,7 +72,7 @@ interface PartialWhiteboard {
   }
 }
 
-const FolderList: React.FC<FolderListProps> = ({ team, whiteboard, setWhiteboard }) => {
+const FolderList: React.FC<FolderListProps> = ({ team, whiteboard, setWhiteboard, setDrawerOpened }) => {
   const [modalOpened, setModalOpened] = useState(false)
   const [whiteboards, whiteboardsHandler] = useListState<PartialWhiteboard>([])
 
@@ -83,9 +84,8 @@ const FolderList: React.FC<FolderListProps> = ({ team, whiteboard, setWhiteboard
         .single()
         .then(({ data }) => {
           // TODO: This should be a proper error
-          const teamId = data?.id ?? ''
-          setWhiteboard(teamId)
-          return teamId
+          const folderId = data?.id ?? ''
+          return folderId
         })
     }
 
@@ -105,19 +105,41 @@ const FolderList: React.FC<FolderListProps> = ({ team, whiteboard, setWhiteboard
       whiteboardsHandler.setState((data ?? []).map(x => x as PartialWhiteboard))
     }
 
+    supabase.channel('public:whiteboard')
+      .on('postgres_changes', {
+        event: '*', schema: 'public', table: 'whiteboard'
+      }, () => {
+        // TODO: check if the new whiteboard is in the current folder and if a refetch is necessary
+        fetchWhiteboards()
+      })
+      .subscribe()
+
     fetchWhiteboards()
   }, [])
 
   return (
     <>
       <CreateWhiteboardModal modalOpened={modalOpened} setModalOpened={setModalOpened} whiteboardsHandler={whiteboardsHandler} rootFolder={whiteboard} />
-      <Stack justify='center' align='center'>
+      <Stack justify='center' align='stretch' spacing={0}>
         {whiteboards.map(board => {
-          return <Button variant='outline' key={board.id}>{board.name}</Button>
+          return (
+            <Paper
+              py='lg' key={board.id} radius={0} withBorder onClick={() => {
+                setWhiteboard(board.id)
+                setDrawerOpened(false)
+              }}
+            >
+              <Text align='center'>
+                {board.name}
+              </Text>
+            </Paper>
+          )
         })}
-        <ActionIcon onClick={() => setModalOpened(true)}>
-          <IconPlus />
-        </ActionIcon>
+        <Center pt='md'>
+          <ActionIcon onClick={() => setModalOpened(true)}>
+            <IconPlus />
+          </ActionIcon>
+        </Center>
       </Stack>
     </>
   )

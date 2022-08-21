@@ -1,7 +1,6 @@
 import './App.css'
 
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
-import WhiteBoardView from './components/whiteboard/WhiteboardView'
 import supabase from './clients/supabase'
 import HomeView from './components/home/HomeView'
 import Dashboard from './components/dashboard/Dashboard'
@@ -22,7 +21,6 @@ const App: React.FC = () => {
         <Route path='/' element={<HomeView />} />
         <Route path='/app/' element={<RequireAuth />}>
           <Route path='dashboard' element={<Dashboard />} />
-          <Route path='whiteboard' element={<WhiteBoardView />} />
           <Route path='team/:teamId' element={<FolderView />} />
         </Route>
       </Routes>

@@ -1,11 +1,15 @@
 import WhiteboardToolbar from './toolbar/WhiteboardToolbar'
 import WhiteBoard from './Whiteboard'
 
-const WhiteboardView: React.FC = () => {
+interface WhiteboardViewProps {
+  id: string
+}
+
+const WhiteboardView: React.FC<WhiteboardViewProps> = ({ id }) => {
   return (
     <>
       <WhiteboardToolbar />
-      <WhiteBoard />
+      <WhiteBoard id={id} />
     </>
   )
 }

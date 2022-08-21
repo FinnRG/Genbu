@@ -1,8 +1,9 @@
 import { KonvaEventObject } from 'konva/lib/Node'
 import React, { useRef, useState, useEffect } from 'react'
-import { Layer, Line, Stage, Text } from 'react-konva'
-// import * as Y from 'yjs'
+import { Layer, Line, Stage } from 'react-konva'
+import * as Y from 'yjs'
 import supabase from '../../clients/supabase'
+import { useYdoc } from './useYDoc'
 
 type DrawTool = 'eraser' | 'pen'
 
@@ -11,11 +12,34 @@ interface LineData {
   points: number[]
 }
 
-const WhiteBoard: React.FC = () => {
+interface WhiteboardProps {
+  id: string
+}
+
+const WhiteBoard: React.FC<WhiteboardProps> = (props) => {
   const isDrawing = useRef(false)
   const [tool, setTool] = useState<DrawTool>('pen')
-  const [lines, setLines] = useState<LineData[]>([])
+  const { ydoc: canvasData } = useYdoc(props.id)
+  const lines = canvasData.getArray<LineData>('lines')
   const [currentLine, setCurrentLine] = useState<LineData|null>(null)
+
+  useEffect(() => {
+    const fetchWhiteboard = async (): Promise<void> => {
+      const { data } = await supabase.from('whiteboard')
+        .select('*')
+        .match({ id: props.id })
+        .single()
+
+      if (data === undefined) {
+        return
+      }
+
+      const arr = (data.data as Record<string, any>).data as Uint8Array
+      Y.applyUpdate(canvasData, arr)
+    }
+
+    fetchWhiteboard()
+  }, [])
 
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>): void => {
     isDrawing.current = true
@@ -43,24 +67,9 @@ const WhiteBoard: React.FC = () => {
       return
     }
     isDrawing.current = false
-    setLines([...lines, currentLine])
+    lines.push([currentLine])
     setCurrentLine(null)
-
-    supabase.from('whiteboard')
-      // @ts-expect-error: Json
-      .update({ data: [...lines, currentLine] })
-      .match({ id: '924e29b2-68fb-4b09-a31b-c48ad1de8ef2' })
-      .then(() => {}, (err) => {
-        console.log(err)
-      })
   }
-
-  useEffect(() => {
-    supabase.from('whiteboard')
-      .select('data')
-      .match({ id: '924e29b2-68fb-4b09-a31b-c48ad1de8ef2' }) // @ts-expect-error: Json
-      .then((e) => setLines(e.data === null ? [] : e.data[0]?.data as LineData[]), (err) => console.log(err))
-  }, [])
 
   return (
     <div>
@@ -73,7 +82,6 @@ const WhiteBoard: React.FC = () => {
       >
 
         <Layer>
-          <Text text='start drawing' x={5} y={5} />
           {lines.map((line, i) => (
             <DrawLine
               key={i}
