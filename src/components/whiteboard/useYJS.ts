@@ -3,35 +3,67 @@ import * as Y from 'yjs'
 import { useCallback, useEffect, useReducer, useState } from 'react'
 
 import { WebrtcProvider } from 'y-webrtc'
+import supabase from '../../clients/supabase'
 
 export interface IUseYjsProps {
-  roomName: string
+  id: string
 }
 
-export function useYjs({ roomName }: IUseYjsProps) {
+export const useYjs = ({ id }: IUseYjsProps) => {
   const [ydoc, setYdoc] = useState<Y.Doc | null>(null)
   const [provider, setProvider] = useState<WebrtcProvider | null>(null)
-  const [type, setType] = useState<Y.Text | null>(null)
-  const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
+  const [, forceUpdate] = useReducer((x: number) => x + 1, 0)
 
   const createProviderInstance = useCallback(() => {
     if (ydoc === null || provider !== null) return
-    setProvider(new WebrtcProvider(roomName, ydoc))
+    setProvider(new WebrtcProvider(`genbu:${id}`, ydoc))
   }, [ydoc, provider])
 
-  const createYMap = useCallback(() => {
-    if (ydoc === null || type !== null) return
-    setType(ydoc.getText(roomName))
-  }, [type, provider])
+  const fetchWhiteboard = async (): Promise<string> => {
+    const { data } = await supabase.from('whiteboard')
+      .select('*')
+      .match({ id })
+      .single()
+
+    if (data === undefined) {
+      return ''
+    }
+
+    return data.updateVector
+  }
+
+  const setWhiteboard = async (): Promise<void> => {
+    fetchWhiteboard().then((data: string) => {
+      const newDoc = new Y.Doc()
+      const arr = Uint8Array.from(data.split(',').map(x => parseInt(x, 10)))
+      Y.applyUpdate(newDoc, arr)
+      setYdoc(newDoc)
+    })
+  }
 
   useEffect(() => {
-    if (ydoc === null) setYdoc(new Y.Doc())
-    else if (ydoc !== null && provider === null) createProviderInstance()
-    if (ydoc !== null && type === null) createYMap()
+    if (ydoc === null) {
+      setWhiteboard()
+    } else if (ydoc !== null && provider === null) createProviderInstance()
+  }, [ydoc, provider])
+
+  useEffect(() => {
     ydoc?.on('update', () => {
       forceUpdate()
+      const updateVector = (Y.encodeStateAsUpdate(ydoc)).join(',')
+      supabase.from('whiteboard')
+        .update({ updateVector })
+        .match({ id })
+        .then((data) => 'Synced')
     })
-  }, [ydoc, provider, type])
+  }, [ydoc])
 
-  return { type, provider, ydoc }
+  useEffect(() => {
+    provider?.disconnect()
+    ydoc?.destroy()
+    setWhiteboard()
+    createProviderInstance()
+  }, [id])
+
+  return { provider, ydoc }
 }

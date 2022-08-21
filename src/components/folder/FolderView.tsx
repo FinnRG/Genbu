@@ -26,7 +26,7 @@ const FolderView: React.FC = () => {
         <FolderList team={teamId} whiteboard={whiteboard} setWhiteboard={setWhiteboard} setDrawerOpened={setOpened} />
       </Drawer>
       {whiteboard !== null && (
-        <WhiteboardView id={whiteboard} />
+        <WhiteboardView id={whiteboard} setFolderViewOpened={setOpened} />
       )}
     </>
   )

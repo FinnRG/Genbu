@@ -22,12 +22,10 @@ serve(async (req) => {
     //@ts-ignore: Types for cryptoRandomString seem broken
     const room_key = cryptoRandomString({ length: 10 }) 
 
-    const json = {
-      data: Y.encodeStateAsUpdate(new Y.Doc())
-    }
+    const updateVector = (Y.encodeStateAsUpdate(new Y.Doc()) as Uint8Array).join(',')
 
     const { data, error } = await supabaseClient.from('whiteboard')
-      .insert([{ data: json, room_key, folder_id, name  }])
+      .insert([{ updateVector, room_key, folder_id, name  }])
       .select()
       .single()
 

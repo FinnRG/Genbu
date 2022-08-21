@@ -4,6 +4,7 @@ import { IconRefresh, IconUsers } from '@tabler/icons'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import supabase from '../../../clients/supabase'
+import { getIconColor } from '../../util'
 
 interface Team {
   name: string
@@ -13,17 +14,6 @@ interface Team {
 type TeamIDArray = Array<Team & { id: string }>
 interface TeamTableProps {
   teams: TeamIDArray
-}
-
-const getIconColor = (hexString: string): string => {
-  const [red, green, blue] = hexString.substring(1).split(/(..)/g)
-    .filter(s => s)
-    .map(x => parseInt(x, 16))
-  if ((red * 0.299 + green * 0.587 + blue * 0.114) > 186) {
-    return '#000000'
-  }
-
-  return '#FFFFFF'
 }
 
 const TeamTable: React.FC<TeamTableProps> = ({ teams }) => {

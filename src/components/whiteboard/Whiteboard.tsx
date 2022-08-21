@@ -4,51 +4,35 @@ import { Layer, Line, Stage } from 'react-konva'
 import * as Y from 'yjs'
 import supabase from '../../clients/supabase'
 import { useYjs } from './useYJS'
-
-type DrawTool = 'eraser' | 'pen'
+import { Tool, WhiteboardControl } from './util'
 
 interface LineData {
-  tool: DrawTool
+  tool: Tool
   points: number[]
+  color: string
 }
 
 interface WhiteboardProps {
   id: string
+  control: WhiteboardControl
 }
 
 const WhiteBoard: React.FC<WhiteboardProps> = (props) => {
   const isDrawing = useRef(false)
-  const [tool, setTool] = useState<DrawTool>('pen')
   const { ydoc: canvasData } = useYjs({
-    roomName: props.id
+    id: props.id
   })
   const lines = canvasData?.getArray<LineData>('lines')
   const [currentLine, setCurrentLine] = useState<LineData|null>(null)
 
-  useEffect(() => {
-    const fetchWhiteboard = async (): Promise<void> => {
-      const { data } = await supabase.from('whiteboard')
-        .select('*')
-        .match({ id: props.id })
-        .single()
-
-      if (data === undefined) {
-        return
-      }
-
-      const arr = (data.data as Record<string, any>).data as Uint8Array
-      Y.applyUpdate(canvasData!, arr)
-    }
-
-    fetchWhiteboard()
-  }, [])
+  const control = props.control
 
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>): void => {
     isDrawing.current = true
     const pos = e.target.getStage()?.getRelativePointerPosition()
     const x = pos?.x === undefined ? 0 : pos?.x
     const y = pos?.y === undefined ? 0 : pos?.y
-    setCurrentLine({ tool, points: [x, y] })
+    setCurrentLine({ tool: control.tool, points: [x, y], color: control.color })
   }
 
   const handleMouseMove = (e: KonvaEventObject<MouseEvent>): void => {
@@ -74,52 +58,47 @@ const WhiteBoard: React.FC<WhiteboardProps> = (props) => {
   }
 
   return (
-    <div>
-      <Stage
-        width={window.innerWidth}
-        height={window.innerHeight - 55}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-      >
+    <Stage
+      width={window.innerWidth}
+      height={window.innerHeight - 55}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      draggable={control.tool === 'drag'}
+    >
 
-        <Layer>
-          {lines?.map((line, i) => (
-            <DrawLine
-              key={i}
-              points={line.points}
-              tool={line.tool}
-            />
-          ))}
-          {currentLine !== null && (
-            <DrawLine
-              points={currentLine.points}
-              tool={currentLine.tool}
-            />
-          )}
-        </Layer>
-      </Stage>
-
-    </div>
+      <Layer>
+        {lines?.map((line, i) => (
+          <DrawLine
+            key={i}
+            data={line}
+          />
+        ))}
+        {currentLine !== null && (
+          <DrawLine
+            data={currentLine}
+          />
+        )}
+      </Layer>
+    </Stage>
   )
 }
 
 interface DrawLineProps {
-  points: number[]
-  tool: DrawTool
+  data: LineData
 }
 
-const DrawLine: React.FC<DrawLineProps> = (props) => {
+const DrawLine: React.FC<DrawLineProps> = ({ data }) => {
   return (
     <Line
-      points={props.points}
-      stroke='#df4b26'
+      points={data.points}
+      stroke={data.color}
       strokeWidth={5}
       tension={0.5}
       lineCap='round'
       lineJoin='round'
       globalCompositeOperation={
-            props.tool === 'eraser' ? 'destination-out' : 'source-over'
+            data.tool === 'eraser' ? 'destination-out' : 'source-over'
         }
     />
   )

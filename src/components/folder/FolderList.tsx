@@ -74,6 +74,7 @@ interface PartialWhiteboard {
 
 const FolderList: React.FC<FolderListProps> = ({ team, whiteboard, setWhiteboard, setDrawerOpened }) => {
   const [modalOpened, setModalOpened] = useState(false)
+  const [rootFolder, setRootFolder] = useState<string | null>(null)
   const [whiteboards, whiteboardsHandler] = useListState<PartialWhiteboard>([])
 
   useEffect(() => {
@@ -85,13 +86,13 @@ const FolderList: React.FC<FolderListProps> = ({ team, whiteboard, setWhiteboard
         .then(({ data }) => {
           // TODO: This should be a proper error
           const folderId = data?.id ?? ''
-          setWhiteboard(folderId)
+          setRootFolder(folderId)
           return folderId
         })
     }
 
     const fetchWhiteboards = async (): Promise<void> => {
-      const folderId = whiteboard ?? await fetchRootFolder()
+      const folderId = rootFolder ?? await fetchRootFolder()
 
       const { data } = await supabase.from('whiteboard')
         .select(`
@@ -120,7 +121,7 @@ const FolderList: React.FC<FolderListProps> = ({ team, whiteboard, setWhiteboard
 
   return (
     <>
-      <CreateWhiteboardModal modalOpened={modalOpened} setModalOpened={setModalOpened} whiteboardsHandler={whiteboardsHandler} rootFolder={whiteboard} />
+      <CreateWhiteboardModal modalOpened={modalOpened} setModalOpened={setModalOpened} whiteboardsHandler={whiteboardsHandler} rootFolder={rootFolder} />
       <Stack justify='center' align='stretch' spacing={0}>
         {whiteboards.map(board => {
           return (

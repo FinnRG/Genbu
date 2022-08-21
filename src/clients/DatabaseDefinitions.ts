@@ -9,32 +9,6 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      folder: {
-        Row: {
-          team_id: string | null
-          created_at: string
-          created_by: string
-          parent_id: string | null
-          name: string
-          id: string
-        }
-        Insert: {
-          team_id?: string | null
-          created_at?: string
-          created_by: string
-          parent_id?: string | null
-          name: string
-          id?: string
-        }
-        Update: {
-          team_id?: string | null
-          created_at?: string
-          created_by?: string
-          parent_id?: string | null
-          name?: string
-          id?: string
-        }
-      }
       team: {
         Row: {
           name: string
@@ -74,42 +48,28 @@ export interface Database {
       }
       whiteboard: {
         Row: {
-          data: Json
           room_key: string
           id: string
           created_at: string
           folder_id: string
           name: string
+          updateVector: string
         }
         Insert: {
-          data: Json
           room_key: string
           id?: string
           created_at?: string
           folder_id: string
           name: string
+          updateVector: string
         }
         Update: {
-          data?: Json
           room_key?: string
           id?: string
           created_at?: string
           folder_id?: string
           name?: string
-        }
-      }
-      user_team: {
-        Row: {
-          user_id: string
-          team_id: string
-        }
-        Insert: {
-          user_id: string
-          team_id: string
-        }
-        Update: {
-          user_id?: string
-          team_id?: string
+          updateVector?: string
         }
       }
       team_invite: {
@@ -130,6 +90,46 @@ export interface Database {
           invitee_id?: string
           created_at?: string | null
           team_id?: string
+        }
+      }
+      user_team: {
+        Row: {
+          user_id: string
+          team_id: string
+        }
+        Insert: {
+          user_id: string
+          team_id: string
+        }
+        Update: {
+          user_id?: string
+          team_id?: string
+        }
+      }
+      folder: {
+        Row: {
+          team_id: string | null
+          created_by: string
+          parent_id: string | null
+          created_at: string
+          name: string
+          id: string
+        }
+        Insert: {
+          team_id?: string | null
+          created_by: string
+          parent_id?: string | null
+          created_at?: string
+          name: string
+          id?: string
+        }
+        Update: {
+          team_id?: string | null
+          created_by?: string
+          parent_id?: string | null
+          created_at?: string
+          name?: string
+          id?: string
         }
       }
     }
