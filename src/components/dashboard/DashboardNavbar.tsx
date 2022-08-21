@@ -98,6 +98,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({ setContent }) => {
         })
       .subscribe()
 
+    setContent(mockdata[active].component)
     fetchInvites()
   }, [])
 

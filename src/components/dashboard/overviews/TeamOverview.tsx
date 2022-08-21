@@ -95,7 +95,7 @@ const CreateTeamButton: React.FC<CreateTeamButtonProps> = ({ fetchTeams }) => {
         title='Create a new Team'
       >
         {!confirmed && (
-          <Alert icon={<IconAlertCircle size={16} />} color='red'>Please activate your account via the email sent to you before proceeding.</Alert>
+          <Alert icon={<IconAlertCircle size={16} />} color='red'>Please activate your account via the email sent to you and log in again before proceeding.</Alert>
         )}
         {confirmed && (
           <form onSubmit={form.onSubmit(({ title, users }) => onSubmit(title, users))}>
