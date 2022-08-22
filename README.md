@@ -40,3 +40,16 @@ Note: Genbu uses supabase-js v2.
 - Limit access to whiteboards
 - Folders
 - Social Logins
+
+## How to run Genbu
+
+```bash
+supabase start
+```
+Then create a `.env` file with your `REACT_APP_SUPABASE_ANON_KEY` and `REACT_APP_SUPABASE_URL`.
+
+```bash
+npm start
+```
+This should open a new browser tab with the Genbu frontend.
+Before creating a new team, you should start the `create_team` function with `supabase functions serve create_team` and before creating a new whiteboard you should run `supabase function serve create_whiteboard`.
