@@ -1,10 +1,11 @@
-import { Drawer } from '@mantine/core'
+import { Drawer, useMantineTheme } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import WhiteboardView from '../whiteboard/WhiteboardView'
 import FolderList from './FolderList'
 
 const FolderView: React.FC = () => {
+  const theme = useMantineTheme()
   const { teamId } = useParams()
   const [opened, setOpened] = useState(true)
   const [whiteboard, setWhiteboard] = useState<string | null>(null)
@@ -21,7 +22,9 @@ const FolderView: React.FC = () => {
         withCloseButton={false}
         closeOnClickOutside={whiteboard !== null}
         closeOnEscape={whiteboard !== null}
-        overlayOpacity={0}
+        overlayColor={theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2]}
+        overlayOpacity={0.55}
+        overlayBlur={3}
       >
         <FolderList team={teamId} whiteboard={whiteboard} setWhiteboard={setWhiteboard} setDrawerOpened={setOpened} />
       </Drawer>

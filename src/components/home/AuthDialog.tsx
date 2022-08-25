@@ -82,57 +82,57 @@ const AuthDialog: React.FC<AuthDialogProps> = (props) => {
   }
 
   return (
-      <form onSubmit={form.onSubmit(onSubmit)}>
-        <Stack>
-          {error && (
-            <Alert icon={<IconAlertCircle size={16} />} title='Error' color='red'>
-              An error occured. Please check if you have an active internet connection and try again in a few minutes.
-            </Alert>
-          )}
-          {props.title === 'register' && (
-            <TextInput
-              label='Name'
-              placeholder='Your name'
-              value={form.values.name}
-              onChange={(event) => form.setFieldValue('name', event.currentTarget.value)}
-            />
-          )}
-
+    <form onSubmit={form.onSubmit(onSubmit)}>
+      <Stack>
+        {error && (
+          <Alert icon={<IconAlertCircle size={16} />} title='Error' color='red'>
+            An error occured. Please check if you have an active internet connection and try again in a few minutes.
+          </Alert>
+        )}
+        {props.title === 'register' && (
           <TextInput
-            required
-            label='Email'
-            placeholder='genbu@example.com'
-            value={form.values.email}
-            onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
-            error={form.errors.email && 'Invalid email'}
+            label='Name'
+            placeholder='Your name'
+            value={form.values.name}
+            onChange={(event) => form.setFieldValue('name', event.currentTarget.value)}
           />
+        )}
 
-          <PasswordInput
-            required
-            label='Password'
-            placeholder='Your password'
-            value={form.values.password}
-            onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}
-            error={form.errors.password && 'Password should include at least 6 characters'}
-          />
+        <TextInput
+          required
+          label='Email'
+          placeholder='genbu@example.com'
+          value={form.values.email}
+          onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
+          error={form.errors.email && 'Invalid email'}
+        />
 
-        </Stack>
+        <PasswordInput
+          required
+          label='Password'
+          placeholder='Your password'
+          value={form.values.password}
+          onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}
+          error={form.errors.password && 'Password should include at least 6 characters'}
+        />
 
-        <Group position='apart' mt='xl'>
-          <Anchor
-            component='button'
-            type='button'
-            color='dimmed'
-            onClick={() => props.toggleTitle()}
-            size='xs'
-          >
-            {props.title === 'register'
-              ? 'Already have an account? Login'
-              : "Don't have an account? Register"}
-          </Anchor>
-          <Button type='submit' loading={loading}>{upperFirst(props.title)}</Button>
-        </Group>
-      </form>
+      </Stack>
+
+      <Group position='apart' mt='xl'>
+        <Anchor
+          component='button'
+          type='button'
+          color='dimmed'
+          onClick={() => props.toggleTitle()}
+          size='xs'
+        >
+          {props.title === 'register'
+            ? 'Already have an account? Login'
+            : "Don't have an account? Register"}
+        </Anchor>
+        <Button type='submit' loading={loading}>{upperFirst(props.title)}</Button>
+      </Group>
+    </form>
   )
 }
 

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useReducer, useState } from 'react'
 
 import { WebrtcProvider } from 'y-webrtc'
 import supabase from '../../clients/supabase'
+import { useDebouncedState, useForceUpdate } from '@mantine/hooks'
 
 export interface IUseYjsProps {
   id: string
@@ -12,7 +13,8 @@ export interface IUseYjsProps {
 export const useYjs = ({ id }: IUseYjsProps) => {
   const [ydoc, setYdoc] = useState<Y.Doc | null>(null)
   const [provider, setProvider] = useState<WebrtcProvider | null>(null)
-  const [, forceUpdate] = useReducer((x: number) => x + 1, 0)
+  const forceUpdate = useForceUpdate()
+  const [debounce, setDebounce] = useDebouncedState(0, 600)
 
   const createProviderInstance = useCallback(() => {
     if (ydoc === null || provider !== null) return
@@ -47,16 +49,19 @@ export const useYjs = ({ id }: IUseYjsProps) => {
     } else if (ydoc !== null && provider === null) createProviderInstance()
   }, [ydoc, provider])
 
+  ydoc?.on('update', () => {
+    forceUpdate()
+    setDebounce(1 + debounce)
+  })
+
   useEffect(() => {
-    ydoc?.on('update', () => {
-      forceUpdate()
-      const updateVector = (Y.encodeStateAsUpdate(ydoc)).join(',')
-      supabase.from('whiteboard')
-        .update({ updateVector })
-        .match({ id })
-        .then((data) => 'Synced')
-    })
-  }, [ydoc])
+    if (ydoc === null) { return }
+    const updateVector = (Y.encodeStateAsUpdate(ydoc)).join(',')
+    supabase.from('whiteboard')
+      .update({ updateVector })
+      .match({ id })
+      .then((data) => 'Synced')
+  }, [debounce])
 
   useEffect(() => {
     provider?.disconnect()
